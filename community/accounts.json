@@ -16,5 +16,14 @@
       "avatar": null
     }
   ],
-  "invites": []
+  "invites": [
+    {
+      "code": "TS4P2TL5QK",
+      "role": "member",
+      "days": null,
+      "createdBy": "nexa-Dev",
+      "createdAt": "2026-11-24T01:27:56.584Z",
+      "usedBy": null
+    }
+  ]
 }

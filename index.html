@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#b8f2d8" />
+  <title>NexaBuild — Cloud Android Builder</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/neo.css" />
+  <link rel="stylesheet" href="css/glass.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/build.css" />
+  <link rel="stylesheet" href="css/edit.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <!-- PERIKSA: Pastikan jalur dist/browsers/sodium.js tersedia pada versi 0.7.15; core.js juga menyediakan pemuat cadangan -->
+  <script defer src="https://cdn.jsdelivr.net/npm/libsodium-wrappers@0.7.15/dist/browsers/sodium.js"></script>
+  <script defer src="js/core.js"></script>
+  <script defer src="js/github.js"></script>
+  <script defer src="js/accounts.js"></script>
+  <script defer src="js/gate.js"></script>
+  <script defer src="js/theme.js"></script>
+  <script defer src="js/home.js"></script>
+  <script defer src="js/build.js"></script>
+  <script defer src="js/edit.js"></script>
+  <script defer src="js/chat.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body data-theme="neo">
+  <!-- Latar video untuk tema Liquid Glass -->
+  <div id="glass-bg-layer" class="glass-bg-layer" aria-hidden="true">
+    <video id="glass-bg-video" class="glass-bg-video" src="assets/videos/liquidglass-bg.mp4" loop playsinline preload="metadata"></video>
+    <div class="glass-bg-fallback"></div>
+  </div>
+
+  <!-- TAHAP 1.1: Gerbang Sidik Jari Tanpa Bingkai -->
+  <main id="screen-gate" class="screen-gate" aria-label="Gerbang Sidik Jari">
+    <div class="gate-header">
+      <h1 class="screen-title">Fingerprint Gate</h1>
+      <p class="screen-subtitle">Tahan jari pada pola garis selama dua detik untuk masuk</p>
+    </div>
+
+    <div id="fp-touch-zone" class="fp-touch-zone" role="button" tabindex="0" aria-label="Sensor sidik jari interaktif">
+      <svg id="fp-svg" class="fp-svg" viewBox="0 0 220 260" width="220" height="260" aria-hidden="true">
+        <defs>
+          <clipPath id="fp-liquid-clip">
+            <path id="fp-liquid-wave" d="M 0 260 L 220 260 L 220 260 L 0 260 Z" />
+          </clipPath>
+          <linearGradient id="fp-fill-grad" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#2563eb" />
+            <stop offset="55%" stop-color="#10b981" />
+            <stop offset="100%" stop-color="#84cc16" />
+          </linearGradient>
+        </defs>
+
+        <!-- Jalur garis kontur sidik jari dasar -->
+        <g id="fp-ridges-base" class="fp-ridges-base" fill="none" stroke-width="3.2" stroke-linecap="round">
+          <path d="M 110 132 C 110 123, 118 123, 118 134 C 118 148, 102 150, 102 132 C 102 112, 127 110, 127 134 C 127 158, 94 160, 94 132" />
+          <path d="M 94 132 C 94 102, 136 100, 136 135 C 136 168, 86 171, 86 132 C 86 92, 145 90, 145 136 C 145 178, 78 182, 78 132" />
+          <path d="M 78 132 C 78 82, 154 79, 154 137 C 154 189, 70 193, 70 132" />
+          <path d="M 62 142 C 60 74, 162 68, 163 138 C 164 198, 72 206, 63 160" />
+          <path d="M 54 156 C 48 66, 171 58, 172 140 C 173 206, 82 218, 56 178" />
+          <path d="M 46 170 C 36 58, 180 48, 181 142 C 182 214, 94 228, 50 196" />
+          <path d="M 39 184 C 25 50, 189 38, 190 144 C 191 220, 108 238, 46 212" />
+          <path d="M 34 198 C 16 44, 198 28, 198 146 C 198 225, 122 246, 44 226" />
+          <path d="M 48 44 C 82 18, 144 18, 176 46" />
+          <path d="M 64 30 C 92 12, 134 12, 160 31" />
+          <path d="M 66 238 C 96 250, 132 250, 162 236" />
+          <path d="M 84 248 C 104 255, 124 255, 144 248" />
+        </g>
+
+        <!-- Lapisan cairan pengisi garis kontur -->
+        <g id="fp-ridges-fill" class="fp-ridges-fill" clip-path="url(#fp-liquid-clip)" fill="none" stroke="url(#fp-fill-grad)" stroke-width="3.6" stroke-linecap="round">
+          <path d="M 110 132 C 110 123, 118 123, 118 134 C 118 148, 102 150, 102 132 C 102 112, 127 110, 127 134 C 127 158, 94 160, 94 132" />
+          <path d="M 94 132 C 94 102, 136 100, 136 135 C 136 168, 86 171, 86 132 C 86 92, 145 90, 145 136 C 145 178, 78 182, 78 132" />
+          <path d="M 78 132 C 78 82, 154 79, 154 137 C 154 189, 70 193, 70 132" />
+          <path d="M 62 142 C 60 74, 162 68, 163 138 C 164 198, 72 206, 63 160" />
+          <path d="M 54 156 C 48 66, 171 58, 172 140 C 173 206, 82 218, 56 178" />
+          <path d="M 46 170 C 36 58, 180 48, 181 142 C 182 214, 94 228, 50 196" />
+          <path d="M 39 184 C 25 50, 189 38, 190 144 C 191 220, 108 238, 46 212" />
+          <path d="M 34 198 C 16 44, 198 28, 198 146 C 198 225, 122 246, 44 226" />
+          <path d="M 48 44 C 82 18, 144 18, 176 46" />
+          <path d="M 64 30 C 92 12, 134 12, 160 31" />
+          <path d="M 66 238 C 96 250, 132 250, 162 236" />
+          <path d="M 84 248 C 104 255, 124 255, 144 248" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="gate-footer">
+      <p id="fp-status-text" class="fp-status-text">Sentuh dan tahan garis sidik jari</p>
+      <p id="fp-percent-text" class="fp-percent-text">0%</p>
+    </div>
+  </main>
+
+  <!-- TAHAP 1.2: Layar Akun (Masuk & Daftar) -->
+  <section id="screen-auth" class="screen-auth" hidden aria-label="Autentikasi Akun">
+    <div class="auth-container">
+      <div class="auth-mascot-wrap" aria-hidden="true">
+        <svg id="auth-mascot" class="auth-mascot" viewBox="0 0 140 120" width="140" height="120">
+          <!-- Antena -->
+          <line x1="70" y1="10" x2="70" y2="26" stroke="#111827" stroke-width="4" stroke-linecap="round" />
+          <circle cx="70" cy="9" r="6" fill="#84cc16" stroke="#111827" stroke-width="3" />
+          <!-- Kepala robot -->
+          <rect x="24" y="26" width="92" height="76" rx="22" fill="#e0f2fe" stroke="#111827" stroke-width="4" />
+          <!-- Telinga -->
+          <rect x="12" y="50" width="12" height="26" rx="5" fill="#86efac" stroke="#111827" stroke-width="3.5" />
+          <rect x="116" y="50" width="12" height="26" rx="5" fill="#86efac" stroke="#111827" stroke-width="3.5" />
+          <!-- Layar wajah -->
+          <rect x="36" y="40" width="68" height="40" rx="12" fill="#ffffff" stroke="#111827" stroke-width="3" />
+          <!-- Mata kiri & kanan -->
+          <g id="mascot-eyes-open">
+            <circle cx="54" cy="60" r="9" fill="#f1f5f9" stroke="#111827" stroke-width="2.5" />
+            <circle id="mascot-pupil-l" cx="54" cy="60" r="4.2" fill="#111827" />
+            <circle cx="86" cy="60" r="9" fill="#f1f5f9" stroke="#111827" stroke-width="2.5" />
+            <circle id="mascot-pupil-r" cx="86" cy="60" r="4.2" fill="#111827" />
+          </g>
+          <!-- Mata tertutup saat ketik password -->
+          <g id="mascot-eyes-closed" hidden>
+            <path d="M 46 60 Q 54 67 62 60" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round" />
+            <path d="M 78 60 Q 86 67 94 60" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round" />
+          </g>
+          <!-- Mulut -->
+          <path d="M 58 90 Q 70 97 82 90" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div class="auth-header">
+        <h1 class="screen-title">NexaBuild Access</h1>
+        <p class="screen-subtitle">Masuk atau daftarkan akun pada repositori GitHub Anda</p>
+      </div>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" id="tab-login" class="auth-tab is-active" role="tab" aria-selected="true">Masuk</button>
+        <button type="button" id="tab-register" class="auth-tab" role="tab" aria-selected="false">Daftar</button>
+      </div>
+
+      <!-- Form Masuk -->
+      <form id="form-login" class="nb-card auth-form" novalidate>
+        <div class="field-group">
+          <label class="field-label" for="login-username">Username</label>
+          <input id="login-username" class="nb-input" type="text" autocomplete="username" placeholder="contoh: andi_dev" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="login-password">Password</label>
+          <input id="login-password" class="nb-input js-pass-input" type="password" autocomplete="current-password" placeholder="Minimal 8 karakter" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="login-repo">Repositori GitHub</label>
+          <input id="login-repo" class="nb-input" type="text" placeholder="pemilik/nama-repo" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="login-token">Token GitHub</label>
+          <input id="login-token" class="nb-input js-pass-input" type="password" placeholder="github_pat_..." required />
+        </div>
+        <button type="submit" id="btn-submit-login" class="nb-btn nb-btn-primary nb-btn-block">Masuk Sekarang</button>
+      </form>
+
+      <!-- Form Daftar -->
+      <form id="form-register" class="nb-card auth-form" hidden novalidate>
+        <div class="field-group">
+          <label class="field-label" for="reg-display">Nama Tampilan</label>
+          <input id="reg-display" class="nb-input" type="text" placeholder="Nama yang tampil di aplikasi" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="reg-username">Username</label>
+          <input id="reg-username" class="nb-input" type="text" placeholder="Huruf kecil, angka, garis bawah" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="reg-password">Password</label>
+          <input id="reg-password" class="nb-input js-pass-input" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="reg-repo">Repositori GitHub</label>
+          <input id="reg-repo" class="nb-input" type="text" placeholder="pemilik/nama-repo" required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="reg-token">Token GitHub</label>
+          <input id="reg-token" class="nb-input js-pass-input" type="password" placeholder="github_pat_..." required />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="reg-invite">Kode Undangan</label>
+          <input id="reg-invite" class="nb-input" type="text" placeholder="Kosongkan jika akun pertama atau Member" />
+        </div>
+        <button type="submit" id="btn-submit-register" class="nb-btn nb-btn-primary nb-btn-block">Daftar Akun</button>
+      </form>
+
+      <!-- Panduan Pembuatan Token Fine-Grained -->
+      <details class="nb-card token-guide">
+        <summary class="token-guide-summary">Panduan Membuat Token GitHub Fine-Grained</summary>
+        <div class="token-guide-body">
+          <ol class="token-guide-list">
+            <li>Buka GitHub di browser HP, ketuk foto profil, pilih <strong>Settings</strong>, lalu <strong>Developer settings</strong>.</li>
+            <li>Pilih <strong>Personal access tokens</strong>, lalu ketuk <strong>Fine-grained tokens</strong> dan <strong>Generate new token</strong>.</li>
+            <li>Pada bagian <strong>Repository access</strong>, pilih <strong>Only select repositories</strong> dan pilih repositori NexaBuild Anda.</li>
+            <li>Buka <strong>Repository permissions</strong> dan atur izin berikut:
+              <ul>
+                <li><strong>Contents</strong>: Read and write</li>
+                <li><strong>Actions</strong>: Read and write</li>
+                <li><strong>Issues</strong>: Read and write</li>
+                <li><strong>Secrets</strong>: Read and write, hanya wajib bagi Developer dan Owner</li>
+                <li><strong>Metadata</strong>: Read</li>
+              </ul>
+            </li>
+            <li>Ketuk <strong>Generate token</strong>, salin tokennya, lalu tempel pada kolom Token GitHub di atas.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- TAHAP 1.4: Intro Video Singkat -->
+  <section id="screen-intro" class="screen-intro" hidden aria-label="Video Pembuka">
+    <video id="intro-video" class="intro-video" src="assets/videos/intro.mp4" muted playsinline preload="metadata"></video>
+    <div class="intro-overlay">
+      <span class="intro-brand">NexaBuild</span>
+    </div>
+    <button type="button" id="btn-skip-intro" class="nb-btn intro-skip-btn">Lewati</button>
+  </section>
+
+  <!-- TAHAP 1.5: Dashboard Utama -->
+  <div id="app-shell" class="app-shell" hidden>
+    <header id="app-header" class="app-header">
+      <div class="header-slot-left">
+        <button type="button" id="btn-drawer" class="icon-btn" aria-label="Buka menu navigasi">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
+        </button>
+        <button type="button" id="btn-header-back" class="icon-btn" hidden aria-label="Kembali">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="header-title-wrap">
+        <h1 id="header-title" class="header-title">Home Dashboard</h1>
+        <p id="header-subtitle" class="header-subtitle">Ringkasan aktivitas dan informasi harian</p>
+      </div>
+
+      <div class="header-slot-right" id="header-slot-right"></div>
+    </header>
+
+    <!-- Drawer Menu -->
+    <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+    <aside id="nav-drawer" class="nav-drawer" aria-label="Menu Samping" aria-hidden="true">
+      <div class="drawer-top">
+        <div class="drawer-profile-card">
+          <div id="drawer-avatar" class="drawer-avatar">NB</div>
+          <div class="drawer-profile-info">
+            <div class="drawer-name-row">
+              <strong id="drawer-display-name" class="drawer-display-name">Pengguna</strong>
+              <span id="drawer-role-badge" class="role-badge"></span>
+            </div>
+            <p id="drawer-username" class="drawer-username">@user</p>
+            <p id="drawer-expiry" class="drawer-expiry">Akses permanen</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-drawer" class="icon-btn" aria-label="Tutup menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-menu-grid">
+        <button type="button" id="drawer-btn-profile" class="drawer-item" style="grid-column: 1 / -1;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span class="drawer-item-text">
+            <strong>Profil Akun</strong>
+            <small>Lihat detail peran, kuota, dan repositori</small>
+          </span>
+        </button>
+
+        <button type="button" id="drawer-btn-invite" class="drawer-item" style="grid-column: 1 / -1;" hidden>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="8.5" cy="7" r="4" />
+            <line x1="20" y1="8" x2="20" y2="14" />
+            <line x1="23" y1="11" x2="17" y2="11" />
+          </svg>
+          <span class="drawer-item-text">
+            <strong>Buat Akun</strong>
+            <small>Buat kode undangan Owner atau Member</small>
+          </span>
+        </button>
+
+        <button type="button" id="drawer-btn-theme" class="drawer-item" style="grid-column: 1 / -1;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+          </svg>
+          <span class="drawer-item-text">
+            <strong id="drawer-theme-label">Tema Neobrutalism</strong>
+            <small>Ketuk untuk beralih ke Liquid Glass</small>
+          </span>
+        </button>
+
+        <button type="button" id="drawer-btn-logout" class="drawer-item drawer-item-danger" style="grid-column: 1 / -1;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span class="drawer-item-text">
+            <strong>Keluar</strong>
+            <small>Akhiri sesi di perangkat ini</small>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Konten Modul -->
+    <main id="app-main" class="app-main">
+      <section id="mod-home" class="module-view" hidden></section>
+      <section id="mod-build" class="module-view" hidden></section>
+      <section id="mod-edit" class="module-view" hidden></section>
+      <section id="mod-chat" class="module-view" hidden></section>
+    </main>
+
+    <!-- Navigasi Bawah -->
+    <nav id="bottom-nav" class="bottom-nav" aria-label="Navigasi Modul Utama">
+      <button type="button" class="nav-btn is-active" data-mod="home">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>Home</span>
+      </button>
+      <button type="button" class="nav-btn" data-mod="build">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" />
+          <polyline points="2 17 12 22 22 17" />
+          <polyline points="2 12 12 17 22 12" />
+        </svg>
+        <span>Build</span>
+      </button>
+      <button type="button" class="nav-btn" data-mod="edit">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span>Edit</span>
+      </button>
+      <button type="button" class="nav-btn" data-mod="chat">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        <span>Chat</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Dialog Kustom Global -->
+  <div id="nb-dialog-backdrop" class="nb-dialog-backdrop" hidden>
+    <div id="nb-dialog" class="nb-dialog" role="dialog" aria-modal="true" aria-labelledby="nb-dialog-title">
+      <div class="nb-dialog-header">
+        <h2 id="nb-dialog-title" class="nb-dialog-title">Informasi</h2>
+      </div>
+      <div id="nb-dialog-body" class="nb-dialog-body"></div>
+      <div id="nb-dialog-actions" class="nb-dialog-actions"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="nb-toast-container" class="nb-toast-container" aria-live="polite"></div>
+</body>
+</html>

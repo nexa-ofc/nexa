@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "accounts": [
+    {
+      "id": "8303e18c-ffeb-46ed-a380-45c344be47b2",
+      "username": "nexa",
+      "displayName": "nexa-Dev",
+      "role": "developer",
+      "passHash": "4pJ+tyKSGboIOSB+Y86CaJ324KEt4MUpMB3mofUfvBc=",
+      "salt": "ZJmlo2QxXeyhYjgugyOhPA==",
+      "iter": 150000,
+      "createdAt": "2026-11-24T01:27:03.598Z",
+      "expiresAt": null,
+      "buildsThisWeek": 0,
+      "weekResetAt": "2026-12-01T01:27:04.240Z",
+      "avatar": null
+    }
+  ],
+  "invites": []
+}

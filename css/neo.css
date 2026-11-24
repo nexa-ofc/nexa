@@ -1,0 +1,189 @@
+/* Tema Neobrutalism Lembut: Palet Mint & Biru, Border Hitam Tebal, Bayangan Offset */
+body[data-theme="neo"] {
+  --neo-bg: #eefbf4;
+  --neo-surface: #ffffff;
+  --neo-mint: #bbf7d0;
+  --neo-mint-strong: #6ee7b7;
+  --neo-blue: #bae6fd;
+  --neo-blue-strong: #38bdf8;
+  --neo-accent: #2563eb;
+  --neo-lemon: #a3e635;
+  --neo-danger: #fda4af;
+  --neo-warn: #fde047;
+  --neo-ink: #111827;
+  --neo-muted: #374151;
+  --neo-border: 2.5px solid #111827;
+  --neo-shadow: 4px 4px 0 #111827;
+  --neo-shadow-sm: 2.5px 2.5px 0 #111827;
+  --neo-radius: 14px;
+
+  background-color: var(--neo-bg);
+  background-image: radial-gradient(#a7f3d0 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+  color: var(--neo-ink);
+}
+
+/* Gerbang sidik jari pada mode neo */
+body[data-theme="neo"] .fp-ridges-base {
+  stroke: #94a3b8;
+}
+
+body[data-theme="neo"] .fp-status-text {
+  color: var(--neo-ink);
+}
+
+body[data-theme="neo"] .fp-percent-text {
+  color: var(--neo-accent);
+}
+
+/* Kartu & Panel */
+body[data-theme="neo"] .nb-card,
+body[data-theme="neo"] .coming-soon-card {
+  background: var(--neo-surface);
+  border: var(--neo-border);
+  border-radius: var(--neo-radius);
+  box-shadow: var(--neo-shadow);
+}
+
+/* Input & Select */
+body[data-theme="neo"] .nb-input,
+body[data-theme="neo"] .nb-select,
+body[data-theme="neo"] .nb-textarea {
+  width: 100%;
+  background: #f8fafc;
+  border: var(--neo-border);
+  border-radius: 11px;
+  padding: 10px 12px;
+  color: var(--neo-ink);
+  outline: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+body[data-theme="neo"] .nb-input:focus,
+body[data-theme="neo"] .nb-select:focus,
+body[data-theme="neo"] .nb-textarea:focus {
+  background: #ffffff;
+  box-shadow: var(--neo-shadow-sm);
+}
+
+/* Tombol */
+body[data-theme="neo"] .nb-btn,
+body[data-theme="neo"] .icon-btn,
+body[data-theme="neo"] .auth-tab,
+body[data-theme="neo"] .drawer-item {
+  background: var(--neo-surface);
+  border: var(--neo-border);
+  border-radius: 12px;
+  box-shadow: var(--neo-shadow-sm);
+  color: var(--neo-ink);
+  font-weight: 700;
+  padding: 10px 14px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+}
+
+body[data-theme="neo"] .nb-btn:active,
+body[data-theme="neo"] .icon-btn:active,
+body[data-theme="neo"] .auth-tab:active,
+body[data-theme="neo"] .drawer-item:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 #111827;
+}
+
+body[data-theme="neo"] .nb-btn:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+}
+
+body[data-theme="neo"] .nb-btn-primary,
+body[data-theme="neo"] .auth-tab.is-active {
+  background: var(--neo-mint-strong);
+  color: var(--neo-ink);
+}
+
+body[data-theme="neo"] .nb-btn-blue {
+  background: var(--neo-blue);
+  color: var(--neo-ink);
+}
+
+body[data-theme="neo"] .nb-btn-danger,
+body[data-theme="neo"] .drawer-item-danger {
+  background: var(--neo-danger);
+  color: var(--neo-ink);
+}
+
+/* Header & Bottom Nav */
+body[data-theme="neo"] .app-header {
+  background: var(--neo-mint);
+  border-bottom: var(--neo-border);
+}
+
+body[data-theme="neo"] .bottom-nav {
+  background: var(--neo-surface);
+  border-top: var(--neo-border);
+}
+
+body[data-theme="neo"] .nav-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: var(--neo-muted);
+}
+
+body[data-theme="neo"] .nav-btn.is-active {
+  background: var(--neo-blue);
+  border: var(--neo-border);
+  box-shadow: var(--neo-shadow-sm);
+  color: var(--neo-ink);
+}
+
+/* Drawer */
+body[data-theme="neo"] .nav-drawer {
+  background: var(--neo-bg);
+  border-right: var(--neo-border);
+}
+
+body[data-theme="neo"] .drawer-avatar {
+  background: var(--neo-blue-strong);
+  border: var(--neo-border);
+  color: var(--neo-ink);
+}
+
+/* Dialog & Toast */
+body[data-theme="neo"] .nb-dialog {
+  background: var(--neo-surface);
+  border: var(--neo-border);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 #111827;
+}
+
+body[data-theme="neo"] .nb-dialog-header {
+  background: var(--neo-mint);
+  border-bottom: var(--neo-border);
+}
+
+body[data-theme="neo"] .nb-toast {
+  background: var(--neo-surface);
+  border: var(--neo-border);
+  border-radius: 12px;
+  box-shadow: var(--neo-shadow-sm);
+  color: var(--neo-ink);
+}
+
+body[data-theme="neo"] .nb-toast[data-type="success"] {
+  background: var(--neo-mint-strong);
+}
+
+body[data-theme="neo"] .nb-toast[data-type="error"] {
+  background: var(--neo-danger);
+}
+
+body[data-theme="neo"] .nb-toast[data-type="warn"] {
+  background: var(--neo-warn);
+}
+
+body[data-theme="neo"] .nb-pill {
+  background: var(--neo-blue);
+  border: 2px solid #111827;
+  border-radius: 999px;
+}
